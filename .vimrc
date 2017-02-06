@@ -49,12 +49,9 @@ set mouse=a
 
 if has("gui_running")
    set guifont=Roboto\ Mono\ 9
-   colors kunal_win
    " Start maximized
    " Use ~x on an English Windows version or ~n for French.
    au GUIEnter * simalt ~x
-else
-    " do colors later, after loading Pathogen
 endif
 
 " Don't use Ex mode, use Q for formatting
@@ -124,27 +121,23 @@ if v:version > 703 || v:version == 703 && has("patch541")
 set formatoptions+=j " Delete comment character when joining commented lines
 endif
 
-" -- Vundle Setup --
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
+" -- vim-plug Setup --
+" Specify a directory for plugins (for Neovim: ~/.local/share/nvim/plugged)
+call plug#begin('~/.vim/plugged')
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
+Plug 'Valloric/YouCompleteMe'
+Plug 'easymotion/vim-easymotion'
+Plug 'godlygeek/tabular'
+Plug 'jlanzarotta/bufexplorer'
+Plug 'SirVer/ultisnips'
+Plug 'ervandew/supertab'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'noah/vim256-color'
 
-Plugin 'Valloric/YouCompleteMe'
-Plugin 'easymotion/vim-easymotion'
-Plugin 'godlygeek/tabular'
-Plugin 'jlanzarotta/bufexplorer'
-Plugin 'SirVer/ultisnips'
-Plugin 'ervandew/supertab'
-Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-
-call vundle#end()
+" Initialize plugin system
+call plug#end()
 
 " BufExplorer options
 let g:bufExplorerShowRelativePath=1  " Show relative paths.
@@ -310,3 +303,6 @@ endif
 
 " bind K to grep word under cursor
 nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
+
+" Color scheme
+colors 256_asu1dark
