@@ -135,6 +135,11 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'noah/vim256-color'
+Plug 'danro/rename.vim'
+Plug 'derekwyatt/vim-scala'
+Plug 'jceb/vim-orgmode'
+Plug 'rust-lang/rust.vim'
+Plug 'tpope/vim-fugitive'
 
 " Initialize plugin system
 call plug#end()
@@ -201,12 +206,18 @@ let g:ctrlp_working_path_mode = 0
 " The Silver Searcher
 if executable('ag')
   " Use ag over grep
-  set grepprg=ag\ --nogroup\ --nocolor
+  "set grepprg='ag --nogroup --nocolor'
+  "let &grepprg='ag --nogroup --nocolor ' . shellescape(&wildignore) . ' $*'
+  "let agcmd='ag --vimgrep --ignore *.pyc --ignore */*.pyc --ignore *~ --ignore */*~ --ignore *.swp --ignore */*.swp $*'
+  let agcmd='ag --nogroup --nocolor --ignore "*~" '
+  let &grepprg=agcmd.'$*'
+  "set grepprg=ag\ --vimgrep\ ignore?\ $*
 
   " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+  "let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
   "let g:ctrlp_user_command = 'ag -l --nocolor --ignore *.pyc --ignore */*.pyc --ignore *~ --ignore */*~ --ignore *.swp --ignore */*.swp -g "" %s'
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+  let g:ctrlp_user_command = 'ag %s -l --nocolor --ignore *.pyc --ignore */*.pyc --ignore *~ --ignore */*~ --ignore *.swp --ignore */*.swp -g ""'
+  "let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 
   let g:ctrlp_custom_ignore = '~$|pyc$|swp$'
 
@@ -223,10 +234,11 @@ endif
 nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
 
 " create the Ag editor command to allow custom ag searches
-command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
+command! -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
+command! -nargs=? -complete=file -bar CB silent! !cargo build <args>|cwindow|redraw!
 
 " now map \/ to recursive search
-nnoremap <Leader>/ :Ag<space>
+nnoremap <Leader>/ :Ag<Space> ''<Left>
 
 " quick and easy search+replace with \r
 noremap <Leader>r :%s///g<Left><Left>
@@ -258,11 +270,13 @@ map <Leader>fw :%s/ \+$//g<cr>
 autocmd FileType scala let &colorcolumn=join(range(101,999),",")
 autocmd FileType scala highlight ColorColumn ctermbg=234
 
-
 " make YCM compatible with UltiSnips (using supertab)
 let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
 let g:SuperTabDefaultCompletionType = '<C-n>'
+
+" rust support in YCM
+let g:ycm_rust_src_path = '/Users/kunal/build/rust/src'
 
 " YCM goto definition shortcut
 nnoremap <Leader>gd :YcmCompleter GoTo<CR>
@@ -279,30 +293,19 @@ let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
 
 highlight ColorColumn ctermbg=234
 
-" make YCM compatible with UltiSnips (using supertab)
-let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
-let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
-let g:SuperTabDefaultCompletionType = '<C-n>'
-
-" better key bindings for UltiSnipsExpandTrigger
-let g:UltiSnipsExpandTrigger = "<tab>"
-let g:UltiSnipsJumpForwardTrigger = "<tab>"
-let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
-
-" The Silver Searcher
-if executable('ag')
-  " Use ag over grep
-  set grepprg=ag\ --nogroup\ --nocolor
-
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-
-  " ag is fast enough that CtrlP doesn't need to cache
-  let g:ctrlp_use_caching = 0
-endif
-
 " bind K to grep word under cursor
 nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
 
 " Color scheme
-colors 256_asu1dark
+" colors 256_asu1dark
+"
+colors jellybeans
+hi VertSplit ctermfg=242 ctermbg=242
+hi Search ctermfg=250 ctermbg=126
+
+
+command! Cb :make build
+
+map <Leader>bu :make build<cr>
+autocmd QuickFixCmdPost [^l]* nested cwindow
+autocmd QuickFixCmdPost    l* nested lwindow
